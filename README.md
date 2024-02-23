@@ -5,4 +5,4 @@ While parallelising [gammapy]() operations, we observed that [numpy]() performan
 ![Benchmark results](noir.png)
 
 The slow-down also occurs in a single separate process as long as there are other similar processes running on the same machine. 
-It suggests that the problem is not related to GIL, a particular parallelisation library or the way we use it, or simple forms of thread contention.
+It suggests that the problem is not related to GIL, a particular parallelisation library or the way we use it, or simple forms of thread contention. There are no I/O operations in the benchmark.
