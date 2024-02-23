@@ -27,19 +27,13 @@ int main(int argc, char* argv[]) {
     }
 
 
-    for (j=0;j<duration * 100;j++) {
+    for (j=0;j<duration;j++) {
     for (i=0;i<length;i++) {
         array[i]=array[i]*2;
     }}
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-
     std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-    //std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::nanoseconds> (end - begin).count() << "[ns]" << std::endl;
-
-    
-  // prints sum 
-  //cout << first_number << " + " <<  second_number << " = " << sum;     
 
   return 0;
 }

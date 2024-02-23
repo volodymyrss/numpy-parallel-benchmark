@@ -51,8 +51,6 @@ def run(nproc: int, ntask: int, version: str, memory, duration) -> dict:
         "times": times
     }
 
-os.system("g++ -O3 -o bench bench.cxx")
-
 
 @click.command()
 @click.argument("nproc", type=str)
@@ -61,8 +59,12 @@ os.system("g++ -O3 -o bench bench.cxx")
 @click.option("-u", "--upload", is_flag=True)
 @click.option("-n", "--name")
 @click.option("-m", "--memory", type=int, default=10)
-@click.option("-d", "--duration", type=int, default=10)
-def main(nproc, ntask, version, upload, name, memory, duration):
+@click.option("-d", "--duration", type=int, default=100)
+@click.option("-o", "--optimization", type=str, default="O3")
+def main(nproc, ntask, version, upload, name, memory, duration, optimization):
+    optimization_s = optimization.split(",")
+    
+
     if '..' in nproc:
         nproc_s = range(*map(int, nproc.split("..")))
     else:
@@ -74,21 +76,27 @@ def main(nproc, ntask, version, upload, name, memory, duration):
     if not os.path.exists(f"reports/{name}"):
         os.makedirs(f"reports/{name}")
 
-    for nproc in nproc_s:
-        for ntask in ntask_s:
-            for version in version_s:
-                print("nproc", nproc, "ntask", ntask, "version", version)
+    for optimization in optimization_s:
+        if optimization in ["O3", "O2", "O1", "O0"]:    
+            os.system(f"g++ -{optimization} -o bench bench.cxx")
+        else:
+            os.system("g++ -o bench bench.cxx")    
+            
+        for nproc in nproc_s:
+            for ntask in ntask_s:
+                for version in version_s:
+                    print("nproc", nproc, "ntask", ntask, "version", version)
 
-                r = run(nproc, ntask, version, memory, duration)
-                r["name"] = name
+                    r = run(nproc, ntask, version, memory, duration)
+                    r["name"] = name
 
-                fn = f"reports/{name}/{nproc}_{ntask}_{version}.json"
-                with open(fn, "w") as f:
-                    json.dump(r, f)
+                    fn = f"reports/{name}/{nproc}_{ntask}_{version}.json"
+                    with open(fn, "w") as f:
+                        json.dump(r, f)
 
-                if upload:
-                    r = ctadata.upload_file(fn, fn)
-                    print(r)
+                    if upload:
+                        r = ctadata.upload_file(fn, fn)
+                        print(r)
 
 
 
