@@ -9,7 +9,7 @@ int main() {
 
     int i=0;
     int j=0;
-    long int length=100000;
+    long int length=1000000;
         
   
     double* array{ new double[length]{} };
