@@ -61,8 +61,12 @@ os.system("g++ -O3 -o bench bench.cxx")
 @click.option("-u", "--upload", is_flag=True)
 @click.option("-n", "--name")
 def main(nproc, ntask, version, upload, name):
-    nproc_s = [int(i) for i in sys.argv[1].split(",")]
-    ntask_s = [int(i) for i in sys.argv[2].split(",")]
+    if '..' in nproc:
+        nproc_s = range(*map(int, nproc.split("..")))
+    else:
+        nproc_s = [int(i) for i in nproc.split(",")]
+        
+    ntask_s = [int(i) for i in ntask.split(",")]
     version_s = sys.argv[3].split(",")
 
     if not os.path.exists(f"reports/{name}"):
