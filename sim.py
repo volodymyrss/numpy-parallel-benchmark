@@ -81,7 +81,7 @@ def main(nproc, ntask, version, upload, name, memory, duration, optimization):
             os.system(f"g++ -{optimization} -o bench bench.cxx")
         else:
             os.system("g++ -o bench bench.cxx")    
-            
+
         for nproc in nproc_s:
             for ntask in ntask_s:
                 for version in version_s:
@@ -89,6 +89,7 @@ def main(nproc, ntask, version, upload, name, memory, duration, optimization):
 
                     r = run(nproc, ntask, version, memory, duration)
                     r["name"] = name
+                    r["optimization"] = optimization
 
                     fn = f"reports/{name}/{nproc}_{ntask}_{version}.json"
                     with open(fn, "w") as f:
