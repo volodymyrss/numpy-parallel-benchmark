@@ -59,13 +59,14 @@ os.system("g++ -O3 -o bench bench.cxx")
 @click.argument("ntask", type=str)
 @click.argument("version", type=str)
 @click.option("-u", "--upload", is_flag=True)
-def main(nproc, ntask, version, upload):
+@click.option("-n", "--name")
+def main(nproc, ntask, version, upload, name):
     nproc_s = [int(i) for i in sys.argv[1].split(",")]
     ntask_s = [int(i) for i in sys.argv[2].split(",")]
     version_s = sys.argv[3].split(",")
 
-    if not os.path.exists("reports"):
-        os.makedirs("reports")
+    if not os.path.exists(f"reports/{name}"):
+        os.makedirs(f"reports/{name}")
 
     for nproc in nproc_s:
         for ntask in ntask_s:
@@ -73,8 +74,9 @@ def main(nproc, ntask, version, upload):
                 print("nproc", nproc, "ntask", ntask, "version", version)
 
                 r = run(nproc, ntask, version)
+                r["name"] = name
 
-                fn = f"reports/{nproc}_{ntask}_{version}.json"
+                fn = f"reports/{name}/{nproc}_{ntask}_{version}.json"
                 with open(fn, "w") as f:
                     json.dump(r, f)
 
