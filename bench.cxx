@@ -2,14 +2,20 @@
 #include <chrono>
 using namespace std;
 
-int main() {
+int main(int argc, char* argv[]) {
+    
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <number>" << std::endl;
+        return 1;
+    }
 
-      
-  // sum of two numbers in stored in variable sumOfTwoNumbers
+    long int memory_scale_m = std::stol(argv[1]);
+    int duration = std::stoi(argv[2]);
+
 
     int i=0;
     int j=0;
-    long int length=1000000;
+    long int length = memory_scale_m * 1000 * 1000;
         
   
     double* array{ new double[length]{} };
@@ -21,7 +27,7 @@ int main() {
     }
 
 
-    for (j=0;j<10000;j++) {
+    for (j=0;j<duration * 100;j++) {
     for (i=0;i<length;i++) {
         array[i]=array[i]*2;
     }}

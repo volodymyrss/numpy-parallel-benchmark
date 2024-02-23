@@ -9,36 +9,36 @@ import ctadata
 
 import click
 
-def op_np():
-    r = np.arange(10000000)
-    for j in range(30):
+def op_np(memory, duration):
+    r = np.arange(memory * 1000 * 1000, dtype=np.float64)
+    for j in range(duration):
         r = r*2
 
-def op_c():
-    subprocess.check_call(["./bench"])
+def op_c(memory, duration):
+    subprocess.check_call(["./bench " + str(memory) + " " + str(duration)], shell=True)
 
 
 def func(args):
-    i, version = args
+    i, version, memory, duration = args
 
     t0 = time.time()
 
     {
         'np': op_np,
         'c': op_c
-    }[version]()
+    }[version](memory, duration)
         
     print("took", time.time() - t0)
 
     return time.time() - t0
 
 
-def run(nproc: int, ntask: int, version: str) -> dict:
+def run(nproc: int, ntask: int, version: str, memory, duration) -> dict:
     t0 = time.time()
 
 
     with mp.Pool(nproc) as p:
-        times = p.map(func, [(i, version) for i in range(ntask)])
+        times = p.map(func, [(i, version, memory, duration) for i in range(ntask)])
 
     total_time = time.time() - t0
     print("total", total_time)
@@ -60,12 +60,14 @@ os.system("g++ -O3 -o bench bench.cxx")
 @click.argument("version", type=str)
 @click.option("-u", "--upload", is_flag=True)
 @click.option("-n", "--name")
-def main(nproc, ntask, version, upload, name):
+@click.option("-m", "--memory", type=int, default=10)
+@click.option("-d", "--duration", type=int, default=10)
+def main(nproc, ntask, version, upload, name, memory, duration):
     if '..' in nproc:
         nproc_s = range(*map(int, nproc.split("..")))
     else:
         nproc_s = [int(i) for i in nproc.split(",")]
-        
+
     ntask_s = [int(i) for i in ntask.split(",")]
     version_s = sys.argv[3].split(",")
 
@@ -77,7 +79,7 @@ def main(nproc, ntask, version, upload, name):
             for version in version_s:
                 print("nproc", nproc, "ntask", ntask, "version", version)
 
-                r = run(nproc, ntask, version)
+                r = run(nproc, ntask, version, memory, duration)
                 r["name"] = name
 
                 fn = f"reports/{name}/{nproc}_{ntask}_{version}.json"
