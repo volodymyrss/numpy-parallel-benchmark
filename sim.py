@@ -87,11 +87,14 @@ def main(nproc, ntask, version, upload, name, memory, duration, optimization):
                 for version in version_s:
                     print("nproc", nproc, "ntask", ntask, "version", version)
 
+                    if version == "np" and optimization != "O3":
+                        continue
+
                     r = run(nproc, ntask, version, memory, duration)
                     r["name"] = name
                     r["optimization"] = optimization
 
-                    fn = f"reports/{name}/{nproc}_{ntask}_{version}.json"
+                    fn = f"reports/{name}/{nproc}_{ntask}_{version}_{optimization}.json"
                     with open(fn, "w") as f:
                         json.dump(r, f)
 
